@@ -23,14 +23,18 @@ These capabilities open up new possibilities for decentralized applications (dAp
 ## Architecture
 The ADCS system follows an event-driven architecture where on-chain events trigger off-chain AI inference actions. When blockchain applications emit events, ADCS nodes detect these signals and coordinate the appropriate AI model executions and data processing in response. Below is a high-level diagram of the ADCS structure:
 
-[View ADCS Structure Diagram](https://raw.githubusercontent.com/ADCS-AI/ADCS-docs/main/images/ADCS_structure.png)
+![View ADCS Structure Diagram](/images/ADCS_structure.JPG)
 
 ## Core Components
 
 # Adcs Oracle contracts
 
-The ADCS Oracle contracts are responsible for requesting data from the ADCS platform and fulfilling the request. You can find the list of deployed contracts [here]
-- Coordinator Contract:
+The ADCS Oracle contracts are responsible for requesting data from the ADCS platform and fulfilling the request. You can find the list of deployed contracts [here](https://github.com/Rivalz-ai/ADCS-core/tree/9f1ca495cce26b5859ad31f3836f03bf795ffb41/contracts/deployments)
+
+- Coordinator Contract: this is a core contract using for consumers
+
+  * Arbitrum: 0x07811b8B6151db734b8D1568918d3A62607879a7
+  * Base: 0x91c5d6e9F50ec656e7094df9fC035924AAA428bb
 
 # Providers
 
@@ -45,15 +49,16 @@ Providers contains these attributes:
 
 # How to become a Provider
 METHOD 1: self host service.
-- Fork our boilerplate repo [here]
-- Copy the Definition Json file
+- Fork our repo [here](https://github.com/Rivalz-ai/ADCS-core)
+- Insert information about your provider [here](https://github.com/Rivalz-ai/ADCS-core/blob/main/open/endpoints.json)
 - Add your service endpoint, parameters, and expected output.
 - Create the Pull Request to the ADCS repo.
 We will review your PR and get back to you. After the PR is merged, you will be a provider.
 
 METHOD 2: Use our hosted service.
-- Fork our boilerplate repo [here]
-- implement your custom service under the `service` folder.
+- Fork our repo [here](https://github.com/Rivalz-ai/ADCS-core)
+- implement your custom service under the [inferrence](https://github.com/Rivalz-ai/ADCS-core/tree/main/inference/blueprints) folder.
+- added information about your service in [descriptions.json](https://github.com/Rivalz-ai/ADCS-core/blob/main/inference/descriptions.json)
 - Raise a PR to the ADCS repo.
 - We will review your PR and get back to you. After the PR is merged, you will be a provider.
 
