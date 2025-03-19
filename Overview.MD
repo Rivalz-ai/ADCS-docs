@@ -29,7 +29,8 @@ The ADCS system follows an event-driven architecture where on-chain events trigg
 
 # Adcs Oracle contracts
 
-The ADCS Oracle contracts are responsible for requesting data from the ADCS platform and fulfilling the request.
+The ADCS Oracle contracts are responsible for requesting data from the ADCS platform and fulfilling the request. You can find the list of deployed contracts [here]
+- Coordinator Contract:
 
 # Providers
 
@@ -42,6 +43,19 @@ Providers contains these attributes:
 - Provider API Documentation
 - Example execution result
 
+# How to become a Provider
+METHOD 1: self host service.
+- Clone our boilerplate repo [here]
+- Copy the Definition Json file
+- Add your service endpoint, parameters, and expected output.
+- Create the Pull Request to the ADCS repo.
+We will review your PR and get back to you. After the PR is merged, you will be a provider.
+
+METHOD 2: Use our hosted service.
+- clone our boilerplate repo [here]
+- implement your custom service under the `service` folder.
+- Raise a PR to the ADCS repo.
+- We will review your PR and get back to you. After the PR is merged, you will be a provider.
 
 # Adaptors
 
