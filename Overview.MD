@@ -96,7 +96,7 @@ abstract contract ADCSConsumerFulfillUint256 is ADCSConsumerBase {
         fulfillDataRequest(requestId, response);
     }
 }
-
+```
 2. **Bool**
 
 ```
@@ -107,6 +107,7 @@ abstract contract ADCSConsumerFulfillBool is ADCSConsumerBase {
         fulfillDataRequest(requestId, response);
     }
 }
+```
 
 3. **Bytes32**
 
@@ -121,7 +122,7 @@ abstract contract ADCSConsumerFulfillBytes32 is ADCSConsumerBase {
         fulfillDataRequest(requestId, response);
     }
 }
-
+```
 4. **Bytes**
 
 ```
@@ -135,6 +136,7 @@ abstract contract ADCSConsumerFulfillBytes is ADCSConsumerBase {
         fulfillDataRequest(requestId, response);
     }
 }
+```
 
 4. **StringAndBool**
 
@@ -149,5 +151,4 @@ abstract contract ADCSConsumerFulfillStringAndBool is ADCSConsumerBase {
         fulfillDataRequest(requestId, response);
     }
 }
-
-
+```
