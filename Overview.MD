@@ -80,6 +80,74 @@ Adaptors contains these attributes:
 
 # Consumer contracts
 
-The ADCS Consumers are the smart contracts that request the data from the ADCS platform and fulfill the request.
+The ADCS Consumers are the smart contracts that request the data from the ADCS platform and fulfill the request. You can find the mocks contract for consumer [here](https://github.com/Rivalz-ai/ADCS-core/tree/main/contracts/src/mock)
+
+** Now we supported 4 data types for fulfillment **
+1. **uint256**
+
+```
+abstract contract ADCSConsumerFulfillUint256 is ADCSConsumerBase {
+    function fulfillDataRequest(uint256 requestId, uint256 response) internal virtual;
+
+    function rawFulfillDataRequest(
+        uint256 requestId,
+        uint256 response
+    ) external verifyRawFulfillment {
+        fulfillDataRequest(requestId, response);
+    }
+}
+
+2. **Bool**
+
+```
+abstract contract ADCSConsumerFulfillBool is ADCSConsumerBase {
+    function fulfillDataRequest(uint256 requestId, bool response) internal virtual;
+
+    function rawFulfillDataRequest(uint256 requestId, bool response) external verifyRawFulfillment {
+        fulfillDataRequest(requestId, response);
+    }
+}
+
+3. **Bytes32**
+
+```
+abstract contract ADCSConsumerFulfillBytes32 is ADCSConsumerBase {
+    function fulfillDataRequest(uint256 requestId, bytes32 response) internal virtual;
+
+    function rawFulfillDataRequest(
+        uint256 requestId,
+        bytes32 response
+    ) external verifyRawFulfillment {
+        fulfillDataRequest(requestId, response);
+    }
+}
+
+4. **Bytes**
+
+```
+abstract contract ADCSConsumerFulfillBytes is ADCSConsumerBase {
+    function fulfillDataRequest(uint256 requestId, bytes memory response) internal virtual;
+
+    function rawFulfillDataRequest(
+        uint256 requestId,
+        bytes memory response
+    ) external verifyRawFulfillment {
+        fulfillDataRequest(requestId, response);
+    }
+}
+
+4. **StringAndBool**
+
+```
+abstract contract ADCSConsumerFulfillStringAndBool is ADCSConsumerBase {
+    function fulfillDataRequest(uint256 requestId, StringAndBool memory response) internal virtual;
+
+    function rawFulfillDataRequest(
+        uint256 requestId,
+        StringAndBool memory response
+    ) external verifyRawFulfillment {
+        fulfillDataRequest(requestId, response);
+    }
+}
 
 
