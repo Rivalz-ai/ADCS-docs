@@ -28,12 +28,109 @@ The ADCS system follows an event-driven architecture where on-chain events trigg
 
 # ADCS Oracle Contracts
 
-The ADCS Oracle contracts are responsible for requesting and fulfilling data from the ADCS platform. You can find the list of deployed contracts [here](https://github.com/Rivalz-ai/ADCS-core/tree/9f1ca495cce26b5859ad31f3836f03bf795ffb41/contracts/deployments)
+The ADCS Oracle contracts are the cornerstone of the ADCS platform, responsible for managing data requests and fulfillment between blockchain applications and AI providers. The system is built around the `ADCSCoordinator` contract, which handles oracle registration, request management, and data fulfillment.
 
-- Coordinator Contract: This is the core contract used by consumers
+## Key Components
 
-  * Arbitrum: 0x07811b8B6151db734b8D1568918d3A62607879a7
-  * Base: 0x91c5d6e9F50ec656e7094df9fC035924AAA428bb
+### 1. Oracle Management
+The coordinator maintains a registry of authorized oracles with a maximum limit of 255 oracles. Key functions include:
+
+```solidity
+function registerOracle(address oracle) external onlyOwner {
+    if (sOracles.length >= MAX_ORACLES) {
+        revert TooManyOracles();
+    }
+    // ... registration logic
+}
+
+function deregisterOracle(address oracle) external onlyOwner {
+    // ... deregistration logic
+}
+```
+
+### 2. Request Management
+Each data request is uniquely identified and tracked using a commitment-based system:
+
+```solidity
+function requestData(
+    uint256 callbackGasLimit,
+    ADCS.Request memory req
+) external returns (uint256) {
+    // Validate gas limit
+    // Generate unique requestId
+    // Store request commitment
+    // Emit DataRequested event
+}
+```
+
+### 3. Data Fulfillment
+The contract supports multiple data types for fulfillment:
+- uint256: Numerical values
+- bool: Boolean values
+- bytes32: Fixed-size byte arrays
+- bytes: Dynamic byte arrays
+- StringAndBool: Combined string and boolean values
+
+Example of fulfillment function:
+```solidity
+function fulfillDataRequestStringAndBool(
+    uint256 requestId,
+    StringAndBool memory response,
+    RequestCommitment memory rc
+) external {
+    validateDataResponse(rc, requestId);
+    // Process submission
+    // Execute callback
+    // Cleanup and emit event
+}
+```
+
+## Security Features
+
+1. **Request Validation**: Each request is validated using a commitment scheme that ensures:
+   - Oracle authentication
+   - Request integrity
+   - Single submission per oracle
+   - Proper gas limit enforcement
+
+2. **Reentrancy Protection**: The contract implements reentrancy guards to prevent malicious callbacks:
+```solidity
+function fulfill(bytes memory resp, RequestCommitment memory rc) private returns (bool) {
+    sConfig.reentrancyLock = true;
+    (bool sent, ) = rc.sender.call(resp);
+    sConfig.reentrancyLock = false;
+    return sent;
+}
+```
+
+3. **Access Control**: Only registered oracles can fulfill requests, and only the contract owner can manage oracle registration.
+
+## Event System
+The contract emits detailed events for tracking and monitoring:
+- `OracleRegistered`: When a new oracle is registered
+- `DataRequested`: When a new request is created
+- `DataRequestFulfilled`: When data is successfully delivered
+- Various typed fulfillment events for different response types
+
+## Integration Points
+
+### Coordinator Contract Addresses
+- Arbitrum: `0x07811b8B6151db734b8D1568918d3A62607879a7`
+- Base: `0x91c5d6e9F50ec656e7094df9fC035924AAA428bb`
+
+### Request Flow
+1. Consumer contracts make requests through the coordinator
+2. Registered oracles monitor for `DataRequested` events
+3. Oracles process requests and submit responses
+4. The coordinator validates and forwards responses to consumers
+5. Consumers receive data through their fulfillment functions
+
+## Error Handling
+The contract includes comprehensive error handling:
+- `TooManyOracles`: When oracle limit is reached
+- `UnregisteredOracleFulfillment`: When unregistered oracle attempts fulfillment
+- `InvalidJobId`: For malformed job identifiers
+- `OracleAlreadySubmitted`: To prevent duplicate submissions
 
 # Providers
 
