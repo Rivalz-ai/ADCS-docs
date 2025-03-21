@@ -117,6 +117,12 @@ The contract emits detailed events for tracking and monitoring:
 ### Coordinator Contract Addresses
 - Arbitrum: `0x07811b8B6151db734b8D1568918d3A62607879a7`
 - Base: `0x91c5d6e9F50ec656e7094df9fC035924AAA428bb`
+- Avalanche: `0x55Ee887dB181B41f69b3313065b1eD6BEE3336A1`
+- Berachain: `0x55Ee887dB181B41f69b3313065b1eD6BEE3336A1`
+- Bsc: `0xcb8BaEf34aDBB414fAB51EC6Ac1C0e4D0340e824`
+- OP: `0x55Ee887dB181B41f69b3313065b1eD6BEE3336A1`
+- Polygon: `0x55Ee887dB181B41f69b3313065b1eD6BEE3336A1`
+- Sonic: `0x55Ee887dB181B41f69b3313065b1eD6BEE3336A1`
 
 ### Request Flow
 1. Consumer contracts make requests through the coordinator
