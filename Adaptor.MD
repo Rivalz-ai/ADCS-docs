@@ -22,16 +22,25 @@ This mathematical representation shows that:
 #### Provider Implementation (Pseudocode)
 
 ```
+# Provider Output Format - Raw inference data
+ProviderOutput:
+    result      # The main inference result (typically unstructured data)
+    confidence  # Confidence score (0.0-1.0)
+    metadata:   # Additional information
+        model
+        timestamp
+        processingTime
+
 class Provider:
     constructor(name, model, endpoint)
     
-    function process(input):
+    function process(input) -> ProviderOutput:
         # Call AI model API with input
         response = callAPI(endpoint, input)
         
-        # Return structured output
-        return {
-            result: response.prediction,
+        # Return raw inference output without specific format constraints
+        return ProviderOutput {
+            result: response.prediction,  # Could be any data type (text, array, object)
             confidence: response.confidence,
             metadata: {
                 model: model,
@@ -68,76 +77,121 @@ Adaptors can also compose with other Adaptors, creating a chain of transformatio
 
 $$A_2 \circ A_1: O_P \rightarrow O_{A_1} \rightarrow O_{A_2}$$
 
+#### Adaptor Output Types
+
+Adaptors convert unstructured Provider outputs into specific, structured formats needed by blockchain applications:
+
+```
+# Some example output formats supported by ADCS
+
+# Boolean output format
+BoolOutput:
+    value: bool  # True/False decision
+
+# Numerical output format
+Uint256Output:
+    value: uint256  # Numerical value for blockchain
+
+# String and Boolean combined output format
+StringAndBoolOutput:
+    text: string  # Textual explanation
+    decision: bool  # True/False decision 
+
+# Bytes output format
+BytesOutput:
+    data: bytes  # Raw binary data
+```
+
 #### Adaptor Implementation (Pseudocode)
 
 ```
 # Base Adaptor (abstract)
 class Adaptor:
-    constructor(name, config)
+    constructor(name, config, outputType)  # outputType specifies the format
     
     # Common utility methods
     function formatResult(result, options)
     function generateMetadata()
     
     # Abstract method that must be implemented by subclasses
-    function process(input) = abstract
+    function process(input) -> [Formatted Output] = abstract
 
 # Single Context Adaptor
 class SingleContextAdaptor extends Adaptor:
-    constructor(name, provider, config)
+    constructor(name, provider, config, outputType)
     
-    function process(input):
-        # Get provider output
+    function process(input) -> [Formatted Output]:
+        # Get provider output (unstructured)
         providerOutput = provider.process(input)
         
         # Apply custom logic with configuration
         decision = evaluateConfidence(providerOutput, config.threshold)
-        formattedResult = formatResult(providerOutput.result)
         
-        # Return adaptor output
-        return {
-            decision: decision,
-            explanation: generateExplanation(providerOutput, decision),
-            formattedResult: formattedResult,
-            metadata: { ... }
-        }
+        # Format result based on specified output type
+        if outputType == "StringAndBool":
+            # Example: Format as [string, bool]
+            explanation = generateExplanation(providerOutput)
+            return StringAndBoolOutput {
+                text: explanation,
+                decision: decision
+            }
+        elif outputType == "Bool":
+            # Example: Format as simple boolean
+            return BoolOutput {
+                value: decision
+            }
+        elif outputType == "Uint256":
+            # Example: Format as numerical value
+            score = calculateScore(providerOutput) * 10^18  # Convert to fixed-point
+            return Uint256Output {
+                value: score
+            }
+        # Other output types...
 
 # Multi-Context Adaptor
 class MultiContextAdaptor extends Adaptor:
-    constructor(name, contexts, config)
+    constructor(name, contexts, config, outputType)
     
-    function process(input):
+    function process(input) -> [Formatted Output]:
         # Collect outputs from all context sources
         contextOutputs = []
         for each context in contexts:
             output = context.process(input)
             contextOutputs.add({ source: typeOf(context), output: output })
         
-        # Aggregate results and make decision
+        # Aggregate results
         aggregatedResult = combineResults(contextOutputs)
         decision = votingDecision(contextOutputs)
         
-        # Return combined output
-        return {
-            decision: decision,
-            explanation: combineExplanations(contextOutputs, decision),
-            formattedResult: aggregatedResult,
-            metadata: { ... }
-        }
+        # Format based on specified output type
+        if outputType == "StringAndBool":
+            explanation = combineExplanations(contextOutputs)
+            return StringAndBoolOutput {
+                text: explanation,
+                decision: decision
+            }
+        elif outputType == "Bool":
+            return BoolOutput {
+                value: decision
+            }
+        # Other format conversions...
 
 # Chained Adaptor (function composition)
 class ChainedAdaptor extends Adaptor:
-    constructor(name, adaptorChain, config)
+    constructor(name, adaptorChain, config, outputType)
     
-    function process(input):
-        # Process through chain of adaptors
+    function process(input) -> [Formatted Output]:
+        # First adaptor can have any output type
         result = adaptorChain[0].process(input)
         
+        # Pass through chain, with intermediate conversions if needed
         for i = 1 to adaptorChain.length - 1:
-            nextInput = convertToString(result.formattedResult)
+            # Convert previous result to format expected by next adaptor
+            nextInput = convertFormat(result)
             result = adaptorChain[i].process(nextInput)
         
-        return result with additional chain metadata
+        # Ensure final result is in the specified output format
+        return convertToOutputType(result, outputType)
 ```
 
 ### 3. System Composition
@@ -149,38 +203,42 @@ $$ADCS: I \xrightarrow{P} O_P \xrightarrow{A} O_A \rightarrow Blockchain$$
 #### Usage Example (Pseudocode)
 
 ```
-# Create providers
+# Create providers (generate unstructured inference data)
 newsProvider = new Provider("NewsAnalysis", "gpt-4", "news-api-endpoint")
 sentimentProvider = new Provider("SentimentAnalysis", "bert", "sentiment-api-endpoint")
 
-# Create adaptors
+# Create adaptors with specific output formats
 sentimentAdaptor = new SingleContextAdaptor(
     "SentimentDecision", 
-    sentimentProvider, 
-    { threshold: 0.7 }
+    sentimentProvider,
+    { threshold: 0.7 },
+    outputType: "Bool"  # Format as boolean
 )
 
 tradingAdaptor = new MultiContextAdaptor(
     "TradingStrategy",
     [newsProvider, sentimentAdaptor],
-    { threshold: 0.6, parameters: { riskTolerance: "medium" } }
+    { threshold: 0.6, parameters: { riskTolerance: "medium" } },
+    outputType: "StringAndBool"  # Format as [string, bool]
 )
 
-# Create adaptor chain
 refinementAdaptor = new SingleContextAdaptor(
     "Refinement",
     newsProvider,
-    { formatOptions: { uppercase: true } }
+    { formatOptions: { uppercase: true } },
+    outputType: "StringAndBool"  # Format as [string, bool]
 )
 
 tradingPipeline = new ChainedAdaptor(
     "TradingPipeline",
     [tradingAdaptor, refinementAdaptor],
-    { }
+    { },
+    outputType: "StringAndBool"  # Final output format
 )
 
-# Use the system
+# Use the system - result will be formatted as StringAndBool [string, bool]
 result = tradingPipeline.process("Tesla stock performance after earnings report")
+# Example result: { text: "BUY BASED ON POSITIVE EARNINGS", decision: true }
 ```
 
 
