@@ -242,13 +242,13 @@ result = tradingPipeline.process("Tesla stock performance after earnings report"
 ```
 ###Examples of different Adaptors
 1. Single Context Adaptor:
-[singleContext](images/singleContext.png)
+[singleContext](images/singleContext.JPG)
 
 IR goes to provider 1, Adaptor 1 uses that results as the context, then used it custom logic to produce the output.
 
 
 2. Multi-Context Adaptor:
-[multiContext](images/multiContext.png)
+[multiContext](images/multiContext.JPG)
 Adaoptor 5 takes Output of Adaptor 3 as context
 Takes output of  Provider 2 as context
 Takes output of provider 3 as context
@@ -257,6 +257,7 @@ Implement its own custom logic to produce the output 5, which is the final outpu
 
 With this graph we need to trace back to the root of every context to execute each of them.
 Then Combine the results to a final context for Adaptor 5 to use.
+
 3. Chained Adaptor:
 [chainedAdaptor](images/chained.JPG)
 IR goes to Provider 1, creates output 1 
