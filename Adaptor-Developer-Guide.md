@@ -342,57 +342,41 @@ function createTradingPipeline():
 
 Let's create a practical example of building a "Risk Assessment Adaptor" that combines multiple existing adaptors and uses simple aggregation rules to determine an overall risk score for a potential investment.
 
-### Step 1: Assume we already have these existing adaptors
+### Step 1: Identify existing adaptors in our system
+
+In our ADCS system, we already have several specialized risk assessment adaptors that we can leverage:
 
 ```
-# These adaptors have already been created elsewhere in our application
+# These adaptors already exist in our system and can be referenced by their IDs
 
-# Evaluates news sentiment for a company
-newsRiskAdaptor = SingleInputAdaptor(
-    id="adaptor-news-risk-v1",           # Unique adaptor ID
-    name="NewsRiskAnalysis",
-    inputSource="provider-news-v1",      # Reference provider by ID
-    coreLLM="gpt-4",
-    staticContext="Analyze news for risk factors related to the company.",
-    config={ riskFactorKeywords: ["lawsuit", "investigation", "fine", "recall"] },
-    outputFormat="Uint256"  # 0-100 risk score
-)
+# "adaptor-news-risk-v1": Evaluates news sentiment for a company
+# - Takes news data from "provider-news-v1"
+# - Uses GPT-4 to analyze news for risk factors
+# - Outputs a risk score from 0-100
 
-# Evaluates financial indicators
-financialRiskAdaptor = SingleInputAdaptor(
-    id="adaptor-financial-risk-v1",      # Unique adaptor ID
-    name="FinancialRiskAnalysis",
-    inputSource="provider-financial-data-v1",  # Reference provider by ID
-    coreLLM=null,  # Uses rule-based processing instead of an LLM
-    staticContext="Calculate financial risk based on debt ratio, liquidity, and volatility.",
-    config={ thresholds: { debtRatio: 0.5, quickRatio: 1.0 } },
-    outputFormat="Uint256"  # 0-100 risk score
-)
+# "adaptor-financial-risk-v1": Evaluates financial indicators
+# - Takes financial data from "provider-financial-data-v1"
+# - Uses rule-based processing to analyze debt ratio, liquidity, and volatility
+# - Outputs a risk score from 0-100
 
-# Evaluates market conditions
-marketRiskAdaptor = SingleInputAdaptor(
-    id="adaptor-market-risk-v1",         # Unique adaptor ID
-    name="MarketRiskAnalysis",
-    inputSource="provider-market-data-v1",  # Reference provider by ID
-    coreLLM=null,
-    staticContext="Assess overall market conditions affecting investments.",
-    config={ indicators: ["VIX", "interest_rates", "sector_performance"] },
-    outputFormat="Uint256"  # 0-100 risk score
-)
+# "adaptor-market-risk-v1": Evaluates market conditions
+# - Takes market data from "provider-market-data-v1"
+# - Analyzes indicators like VIX, interest rates, and sector performance
+# - Outputs a risk score from 0-100
 ```
 
 ### Step 2: Create our composite risk assessment adaptor
 
 ```
-# Now we'll create a new adaptor that combines all three risk assessments
+# Now we'll create a new adaptor that combines the existing risk assessment adaptors
 function createInvestmentRiskAdaptor():
     # Define the aggregation configuration
     config = {
         # Weighted average configuration
         weights: {
-            financial: 0.5,    # Financial data has highest importance
-            news: 0.3,         # News sentiment is second
-            market: 0.2        # Market conditions is third
+            "adaptor-financial-risk-v1": 0.5,  # Financial data has highest importance
+            "adaptor-news-risk-v1": 0.3,       # News sentiment is second
+            "adaptor-market-risk-v1": 0.2      # Market conditions is third
         },
         
         # Aggregation method
@@ -427,14 +411,14 @@ function createInvestmentRiskAdaptor():
     4. When inputs conflict, prefer financial data unless confidence is low
     """
     
-    # Create the composite multi-input adaptor
+    # Create the composite multi-input adaptor by referencing existing adaptors
     riskAdaptor = new MultiInputAdaptor(
-        id="adaptor-investment-risk-v1",    # Unique adaptor ID
+        id="adaptor-investment-risk-v1",     # Unique adaptor ID
         name="InvestmentRiskAssessment",
         inputSources=[
-            "adaptor-financial-risk-v1",    # Reference by ID
-            "adaptor-news-risk-v1",         # Reference by ID
-            "adaptor-market-risk-v1"        # Reference by ID
+            "adaptor-financial-risk-v1",     # Reference existing adaptor by ID
+            "adaptor-news-risk-v1",          # Reference existing adaptor by ID
+            "adaptor-market-risk-v1"         # Reference existing adaptor by ID
         ],
         coreLLM=null,  # Using simple weighted average, no LLM needed
         staticContext=staticContext,
@@ -514,25 +498,15 @@ result = investmentRiskAdaptor.process("TSLA")
 # }
 ```
 
-### Step 5: Extend with additional outputs
+### Step 5: Extend with additional outputs by using another existing adaptor
 
 ```
-# We could further chain this with a recommendation adaptor
-recommendationAdaptor = new SingleInputAdaptor(
-    id="adaptor-investment-recommendation-v1",  # Unique adaptor ID
-    name="InvestmentRecommendation",
-    inputSource="adaptor-investment-risk-v1",   # Reference by ID
-    coreLLM="gpt-3.5",
-    staticContext="Generate investment recommendations based on risk assessment.",
-    config={
-        recommendationTypes: {
-            "LOW": "Consider for long-term portfolio.",
-            "MEDIUM": "Consider with hedging strategy.",
-            "HIGH": "Avoid or limit exposure."
-        }
-    },
-    outputFormat="StringAndBool"  # Recommendation text and buy/don't buy decision
-)
+# We can further chain this with an existing recommendation adaptor in our system
+
+# "adaptor-investment-recommendation-v1" already exists in our system:
+# - Takes risk assessment output
+# - Uses GPT-3.5 to generate investment recommendations
+# - Outputs recommendation text and buy/don't buy decision
 
 # Chain them together
 investmentAdvisorPipeline = new ChainedAdaptor(
@@ -540,7 +514,7 @@ investmentAdvisorPipeline = new ChainedAdaptor(
     name="InvestmentAdvisor",
     adaptorChain=[
         "adaptor-investment-risk-v1",        # Reference by ID
-        "adaptor-investment-recommendation-v1"  # Reference by ID
+        "adaptor-investment-recommendation-v1"  # Reference existing adaptor by ID
     ],
     config={},
     outputFormat="StringAndBool"
@@ -557,10 +531,10 @@ advice = investmentAdvisorPipeline.process("TSLA")
 ```
 
 This example demonstrates:
-1. **Reusing Existing Adaptors**: We use three specialized risk assessment adaptors as inputs
+1. **Leveraging Existing Adaptors**: We use existing specialized risk assessment adaptors as inputs by referencing their IDs
 2. **Simple Aggregation Rules**: We implement weighted averaging with conflict resolution
 3. **Practical Application**: The resulting adaptor provides meaningful investment risk scores
-4. **Extensibility**: The adaptor can be further chained with other adaptors for more complex workflows
+4. **Extensibility**: The adaptor can be further chained with other existing adaptors for more complex workflows
 
 ## Best Practices for Complex Adaptor Graphs
 
