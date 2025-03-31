@@ -161,17 +161,6 @@ if (result.bool) {
 }
 ```
 
-#### Why Use a Wrapper?
-
-Even though this example shows minimal transformation, creating a wrapper adaptor provides several advantages:
-
-1. **Abstraction**: Applications depend on your adaptor ID, not the provider directly
-2. **Provider Switching**: You can change providers later without disrupting dependent systems
-3. **Enhanced Functionality**: You can add more features to the adaptor over time
-4. **System Integration**: The adaptor becomes part of the ADCS monitoring and management system
-
-This simple use case demonstrates how to create a basic adaptor that wraps an existing provider with minimal customization. Even without complex transformations, the wrapper pattern offers architectural benefits and prepares your system for future enhancements.
-
 ## Best Practices for Complex Adaptor 
 1. **Modularize Your Design**: Break complex logic into smaller, specialized adaptors
 2. **Reuse Adaptors**: Create adaptors that can be reused in multiple inputs
