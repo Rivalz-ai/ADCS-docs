@@ -71,102 +71,127 @@ This guide provides detailed instructions for developers on how to create new ad
    ```
 
 2. **Adaptors**
-   - **Input**: One or more provider/adaptor outputs as data sources
+   - **id**: The unique identifier for the adaptor.
+   - **name**: The name of the adaptor.
+   - **Input**: One or more provider/adaptor outputs as data sources.
    - **Core LLM**: Optional AI model used by the adaptor for processing or reasoning
    - **Static Context**: Predefined information or rules provided to the adaptor
-   - **Output Format**: Structured data in a specific format for blockchain applications (e.g., `BoolOutput`, `Uint256Output`, `StringAndBoolOutput`, `BytesOutput`)
+   - **Output**: Structured data in a specific format for blockchain applications (e.g., `BoolOutput`, `Uint256Output`, `StringAndBoolOutput`, `BytesOutput`)
 
-   ```
-   # Adaptor attribute structure
-   Adaptor:
-       id            # Unique identifier for the adaptor instance
-       name          # Descriptive name for the adaptor
-       input         # Data sources from providers or other adaptors
-       coreLLM       # AI model used for processing
-       staticContext # Fixed information or rules
-       config        # Processing parameters and settings
-       outputFormat  # Type of structured output
-   ```
 
 ### Adaptor Types
 
-1. **Single Input Adaptor**: Takes output from one provider/adaptor as input
-2. **Multi-Input Adaptor**: Takes outputs from multiple providers/adaptors as input
-3. **Chained Adaptor**: Creates a sequential processing pipeline of adaptors
+1. **Adaptor as wrapper for Provider**: use provider as input and output
+2. **Single Input Adaptor**: Takes output from one adaptor as input
+3. **Multi-Input Adaptor**: Takes outputs from multiple providers/adaptors as input
 
-For multi-input adaptors, any aggregation logic should be specified in the static context. By default, text outputs are combined using simple concatenation with appropriate separators. For more complex aggregation needs, developers should provide explicit instructions in the static context of the adaptor.
+## How to leverage your adaptors by using existing adaptors and providers
 
-## Creating Adaptor Graphs
+Adaptors and providers can be connected in various configurations to create processing workflows. These connections form a network of components that process and transform data in sequence or in parallel.
 
-Adaptors and providers can be connected in various configurations to create processing graphs. When designing these graphs, follow these rules:
+### UseCase 1: Creating a new adaptor by wrapping the XtrendProvider
 
-### Rules for Creating Adaptor Graphs
+#### Description
 
-1. **Input/Output Compatibility**: Ensure that each adaptor receives inputs in the format it expects
-2. **Type Safety**: Verify that the output format of a provider/adaptor matches the expected input format of the next adaptor in the chain
-3. **Execution Order**: Consider the order of execution in the graph, especially for multi-input adaptors
-4. **Error Handling**: Include strategies for handling failures at any point in the graph
-5. **Circular Dependencies**: Avoid creating circular dependencies between adaptors
+In this simplified use case, we create a basic adaptor that wraps the XtrendProvider. Since the provider already delivers data in our desired format, our adaptor will primarily serve as a gateway that controls access to the provider and provides a standardized interface within the ADCS system.
 
-### Functions for Graph Construction
+#### Step-by-Step Implementation
 
-When creating a graph of adaptors and providers, you'll need to consider these key functions:
+1. **Identify the existing provider**:
+   The XtrendProvider has the following attributes:
+   ```
+   id: "provider-xtrend-001"
+   name: "Crypto Trend Provider"
+   category: "Inference"
+   description: "Analyzes social media for cryptocurrency trends"
+   endpoint: "https://api.xtrend.io/v1/crypto-trends"
+   parameters: {
+     timeframe: "24h"
+   }
+   outputFormat: "StringAndBool"  // Already in our desired format
+   ```
 
-- **Compatibility Validation**: Functions to validate that the output format of a source component is compatible with the input requirements of a target component
-- **Execution Order Resolution**: Algorithms (like topological sort) to determine the correct order of execution for components in the graph
-- **Node Execution**: Functions to execute individual nodes in the graph, handling different processing for providers versus adaptors
-- **Graph Execution**: Functions to execute the entire graph, gathering inputs, processing each node in the correct order, and returning results
+2. **Create the wrapper adaptor**:
 
-## Step-by-Step Guide to Creating Adaptors
+```
+// Pseudocode for defining a simple CryptoTrendAdaptor
 
-### 1. Creating a Single Input Adaptor
+// Define the adaptor configuration
+const adaptor = {
+  id: "adaptor-crypto-trend-v1",
+  name: "Cryptocurrency Trend Adaptor",
+  input: {
+    sources: ["provider-xtrend-001"]
+  },
+  coreLLM: null,  // No LLM needed for this simple pass-through
+  staticContext: "",  // No transformation needed
+  outputFormat: "StringAndBool"  // Same as the provider
+};
 
-To create a single input adaptor, follow these steps:
+// The adaptor simply passes through the provider's output
+function processTrendData(providerOutput) {
+  // Since the provider already gives us what we need,
+  // we simply return its output directly
+  return providerOutput;
+}
+```
 
-1. **Define the Provider**: Create or reference an existing provider that will supply input data
-2. **Configure the Adaptor**: Define configuration parameters like thresholds and output mappings
-3. **Define Static Context**: Provide instructions or rules for processing the input data
-4. **Create the Adaptor**: Instantiate the adaptor with the provider as input, optionally specifying a core LLM for additional processing
+#### Example Usage of the Wrapped Provider
 
-### 2. Creating a Multi-Input Adaptor
+```
+// Pseudocode for using the adaptor
 
-To create a multi-input adaptor, follow these steps:
+// The adaptor automatically uses whatever the provider returns
+// No specific input needed - the provider already handles data collection
 
-1. **Define Input Sources**: Create or reference existing providers and adaptors that will supply input data
-2. **Configure the Adaptor**: Define configuration parameters including weights for different input sources
-3. **Define Aggregation Instructions**: Specify in the static context how inputs should be combined
-4. **Create the Adaptor**: Instantiate the adaptor with multiple input sources, specifying how to process and aggregate these inputs
+// Call the adaptor (handled by ADCS runtime)
+const result = adaptorSystem.execute("adaptor-crypto-trend-v1");
 
-### 3. Creating a Chained Adaptor
+// Example output (passed through directly from provider):
+// {
+//   string: "BTC: Strong positive sentiment with 5800 mentions in last 24h",
+//   bool: true  // Provider's recommendation to buy
+// }
 
-To create a chained adaptor, follow these steps:
+// This output can be used directly by a smart contract:
+if (result.bool) {
+  // Execute buy order
+} else {
+  // Hold position
+}
+```
 
-1. **Create Component Adaptors**: Define or reference the adaptors that will be chained together
-2. **Define Processing Order**: Determine the sequence in which adaptors will process the data
-3. **Configure the Chain**: Specify any special handling required between stages
-4. **Create the Adaptor**: Instantiate the chained adaptor, ensuring each adaptor in the chain receives compatible inputs
+#### Why Use a Wrapper?
 
-## Best Practices for Complex Adaptor Graphs
+Even though this example shows minimal transformation, creating a wrapper adaptor provides several advantages:
 
+1. **Abstraction**: Applications depend on your adaptor ID, not the provider directly
+2. **Provider Switching**: You can change providers later without disrupting dependent systems
+3. **Enhanced Functionality**: You can add more features to the adaptor over time
+4. **System Integration**: The adaptor becomes part of the ADCS monitoring and management system
+
+This simple use case demonstrates how to create a basic adaptor that wraps an existing provider with minimal customization. Even without complex transformations, the wrapper pattern offers architectural benefits and prepares your system for future enhancements.
+
+## Best Practices for Complex Adaptor 
 1. **Modularize Your Design**: Break complex logic into smaller, specialized adaptors
 2. **Reuse Adaptors**: Create adaptors that can be reused in multiple inputs
 3. **Document Dependencies**: Clearly document the input/output relationships between components
 4. **Test Each Component**: Test each provider and adaptor individually before connecting them
-5. **Visualize Your Graph**: Use diagrams to visualize the flow of data through your graph
+5. **Visualize Your Network**: Use diagrams to visualize the flow of data through your adaptor connections
 6. **Optimize Static Context**: Keep static context concise and relevant to the specific task
 7. **Select Appropriate LLMs**: Choose the right core LLM based on the complexity of the task
 8. **Define Aggregation in Static Context**: For multi-input adaptors, clearly specify aggregation rules in the static context
 9. **Handle Edge Cases**: Include logic for handling missing, conflicting, or low-confidence inputs
 10. **Use Consistent IDs**: Create unique, descriptive IDs for all providers and adaptors
 
-## Debugging Adaptor Graphs
+## Debugging Adaptor Connections
 
-When debugging adaptor graphs, follow these steps:
+When debugging connected adaptors, follow these steps:
 
-1. **Trace Data Flow**: Trace how data flows through the graph
+1. **Trace Data Flow**: Trace how data flows through the connected components
 2. **Log Intermediate Results**: Log the output of each component
 3. **Check Compatibility**: Verify that each component receives compatible inputs
-4. **Test Edge Cases**: Test the graph with edge cases and unexpected inputs
+4. **Test Edge Cases**: Test the workflow with edge cases and unexpected inputs
 5. **Validate Final Output**: Ensure the final output meets the expected format and quality
 6. **Inspect LLM Interactions**: Review how core LLMs are processing the inputs
 7. **Verify Static Context Usage**: Confirm static context is properly applied
@@ -175,8 +200,8 @@ When debugging adaptor graphs, follow these steps:
 
 ## Conclusion
 
-By following this guide, you should now be able to create complex adaptor graphs that combine various providers and adaptors to process and format data for blockchain applications. Remember to design your graphs with modularity, reusability, and clear data flow in mind. The inclusion of core LLMs and static context provides additional flexibility and intelligence to your adaptors, enabling more sophisticated processing and decision-making capabilities. 
+By following this guide, you should now be able to create complex adaptor networks that combine various providers and adaptors to process and format data for blockchain applications. Remember to design your connections with modularity, reusability, and clear data flow in mind. The inclusion of core LLMs and static context provides additional flexibility and intelligence to your adaptors, enabling more sophisticated processing and decision-making capabilities. 
 
 For multi-input adaptors, always include clear aggregation instructions in the static context to ensure inputs are combined correctly according to your specific requirements. By default, simple text concatenation is used for combining outputs, but you can specify more complex aggregation logic in the static context when needed.
 
-Always use unique, consistent IDs to ensure proper referencing between components in your adaptor graph. 
+Always use unique, consistent IDs to ensure proper referencing between components in your adaptor network. 
