@@ -10,10 +10,10 @@ This guide provides detailed instructions for developers on how to create new ad
 
 1. **Providers**
    - **Provider name**: The name of the provider
-   - **Category**: The category of the provider.
-    - Inference: Providers that provide inference services.
-    - No inference: Providers that provide data services.
-    - Core LLM: Providers that provide core LLM services.
+   - **Category**: The category of the provider:
+     - **Inference**: Providers that provide inference services
+     - **No inference**: Providers that provide data services
+     - **Core LLM**: Providers that provide core LLM services
    - **Parameters**: Parameters for the provider. Optional.
    - **LLM**: The LLM to use for the provider. Optional.
    - **Description**: A description of the provider.
@@ -22,6 +22,53 @@ This guide provides detailed instructions for developers on how to create new ad
    - **Input**: Raw data or query (type depends on provider implementation)
    - **Output Format**: The format of the output data.
 
+#### Provider Examples by Category
+
+1. **Inference Provider Example**
+   ```
+   {
+     "id": "provider-meme-001",
+     "name": "meme coin trend Provider",
+     "category": "Inference",
+     "description": "Provide a sentiment analysis of a meme coins and return which coi you should buy or sell",
+     "endpoint": "https://api.sentiment-analysis.com/analyze",
+     "parameters": {},
+     "LLM": "gpt-4o-mini",
+     "input": "popular X posts on a meme coin",
+     "outputFormat": "StringAndBool"
+   }
+   ```
+
+2. **No Inference Provider Example**
+   ```
+   {
+     "id": "provider-market-data-v1",
+     "name": "Financial Market Data Provider",
+     "category": "No inference",
+     "description": "Provides real-time and historical market data for financial assets",
+     "endpoint": "https://api.financial-data.com/market",
+     "LLM": null,
+     "parameters": {
+       "Symbol": "Asset symbol or identifier (e.g., 'TSLA', 'BTC-USD')"
+     },
+     "outputFormat": "JSON"
+   }
+   ```
+
+3. **Core LLM Provider Example**
+   ```
+   {
+     "id": "provider-gpt4-v1",
+     "name": "GPT-4 Provider",
+     "category": "Core LLM",
+     "description": "Provides access to OpenAI's GPT-4 model for general-purpose text generation and reasoning",
+     "endpoint": "https://api.openai.com/v1/chat/completions",
+     "parameters": {},
+     "LLM": "gpt-4",
+     "input": "Prompt text with optional system instructions",
+     "outputFormat": "String"
+   }
+   ```
 
 2. **Adaptors**
    - **Input**: One or more provider/adaptor outputs as data sources
