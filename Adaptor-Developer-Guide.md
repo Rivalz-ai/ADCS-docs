@@ -30,7 +30,7 @@ This guide provides detailed instructions for developers on how to create new ad
      "id": "provider-meme-001",
      "name": "meme coin trend Provider",
      "category": "Inference",
-     "description": "Provide a sentiment analysis of a meme coins and return which coi you should buy or sell",
+     "description": "Provide a sentiment analysis of a meme coins and return which coin you should buy or sell",
      "endpoint": "https://api.sentiment-analysis.com/analyze",
      "parameters": {},
      "LLM": "gpt-4o-mini",
@@ -42,7 +42,7 @@ This guide provides detailed instructions for developers on how to create new ad
 2. **No Inference Provider Example**
    ```
    {
-     "id": "provider-market-data-v1",
+     "id": "provider-market-001",
      "name": "Financial Market Data Provider",
      "category": "No inference",
      "description": "Provides real-time and historical market data for financial assets",
@@ -58,7 +58,7 @@ This guide provides detailed instructions for developers on how to create new ad
 3. **Core LLM Provider Example**
    ```
    {
-     "id": "provider-gpt4-v1",
+     "id": "provider-gpt4-001",
      "name": "GPT-4 Provider",
      "category": "Core LLM",
      "description": "Provides access to OpenAI's GPT-4 model for general-purpose text generation and reasoning",
