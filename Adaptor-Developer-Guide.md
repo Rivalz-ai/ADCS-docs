@@ -160,6 +160,76 @@ if (result.bool) {
   // Hold position
 }
 ```
+### UseCase 2: Creating a new adaptor by using the Coinmarketcap Provider
+
+#### Description
+
+In this use case, we create a more sophisticated adaptor that uses the Coinmarketcap Provider to analyze cryptocurrency market data and identify the top 5 tokens worth buying based on a set of predefined criteria. Unlike the simple wrapper in UseCase 1, this adaptor performs significant analysis and transformation of the provider's data to generate actionable investment recommendations.
+
+#### Step-by-Step Implementation
+
+1. **Identify the existing provider**:
+   The Coinmarketcap Provider has the following attributes:
+   ```
+   id: "provider-coinmarketcap-001"
+   name: "Coinmarketcap Data Provider"
+   category: "No inference"
+   description: "Provides real-time market data for cryptocurrencies from Coinmarketcap"
+   endpoint: "https://api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
+   parameters: {
+     limit: "100",  // Number of tokens to retrieve
+     sort: "market_cap",  // Sort by market capitalization
+     sort_dir: "desc"  // Sort in descending order
+   }
+   LLM: null
+   outputFormat: "JSON"  // Structured market data
+   ```
+
+2. **Define the selection and analysis criteria**:
+   Our adaptor will filter and analyze tokens based on:
+   - Market capitalization (top 100 tokens by default)
+   - Recent price performance (24h, 7d changes)
+   - Trading volume vs. market cap ratio
+   - Relative volume increase/decrease
+   - Market sentiment indicators
+
+3. **Create the investment analysis adaptor**:
+
+```
+// Pseudocode for defining a CryptoInvestmentAdaptor
+
+// Define the adaptor configuration
+const adaptor = {
+  id: "adaptor-crypto-investment-v1",
+  name: "Crypto Investment Recommendation Adaptor",
+  input: {
+    sources: ["provider-coinmarketcap-001"]
+  },
+  coreLLM: "gpt-4",  // Using an LLM to analyze patterns and generate insights
+  staticContext: `
+    Analyze the top 100 cryptocurrencies by market cap and identify the 5 tokens most worth buying based on:
+    1. Price momentum: Look for positive but not overheated price action (10-30% gains in last 7 days)
+    2. Volume profile: Trading volume should be increasing but sustainable (volume/market cap ratio between 0.1-0.5)
+    3. Market position: Prefer tokens in the top 50 by market cap for liquidity reasons
+    4. Avoid tokens that have increased more than 40% in the last 24 hours (potential pump and dump)
+    5. Consider relative value compared to similar tokens in the same category
+    return an array of 5 strings
+    `
+  outputFormat: "String[5]"  // return an array of 5 strings
+  }
+```
+
+#### Example Usage of the Investment Adaptor
+
+```
+// Pseudocode for using the adaptor
+
+// Call the adaptor (handled by ADCS runtime)
+const result = adaptorSystem.execute("adaptor-crypto-investment-v1");
+
+// Example output: ["BTC", "ETH", "SOL", "XRP", "ADA"]
+
+This use case demonstrates creating an adaptor that performs significant analysis and transformation on data from a provider. By applying filtering, scoring algorithms, and LLM-based analysis, the adaptor converts raw market data into actionable investment recommendations with explanations.
 
 ## Best Practices for Complex Adaptor 
 1. **Modularize Your Design**: Break complex logic into smaller, specialized adaptors
