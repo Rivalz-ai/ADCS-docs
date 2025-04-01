@@ -142,7 +142,6 @@ function processTrendData(providerOutput) {
 // Pseudocode for using the adaptor
 
 // The adaptor automatically uses whatever the provider returns
-// No specific input needed - the provider already handles data collection
 
 // Call the adaptor (handled by ADCS runtime)
 const result = adaptorSystem.execute("adaptor-crypto-trend-v1");
@@ -176,11 +175,6 @@ In this use case, we create a more sophisticated adaptor that uses the Coinmarke
    category: "No inference"
    description: "Provides real-time market data for cryptocurrencies from Coinmarketcap"
    endpoint: "https://api.coinmarketcap.com/v1/cryptocurrency/listings/latest"
-   parameters: {
-     limit: "100",  // Number of tokens to retrieve
-     sort: "market_cap",  // Sort by market capitalization
-     sort_dir: "desc"  // Sort in descending order
-   }
    LLM: null
    outputFormat: "JSON"  // Structured market data
    ```
