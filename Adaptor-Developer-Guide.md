@@ -231,6 +231,152 @@ const result = adaptorSystem.execute("adaptor-crypto-investment-v1");
 
 This use case demonstrates creating an adaptor that performs significant analysis and transformation on data from a provider. By applying filtering, scoring algorithms, and LLM-based analysis, the adaptor converts raw market data into actionable investment recommendations with explanations.
 
+### UseCase 3: Creating a Portfolio Balancing Adaptor
+
+#### Description
+
+In this use case, we demonstrate how to create a new adaptor that builds upon our existing Investment adaptor from UseCase 2. The Portfolio Balancing Adaptor will take the top 5 token recommendations and create a balanced portfolio allocation based on risk tolerance and investment goals.
+
+#### Step-by-Step Implementation
+
+1. **Reference the existing adaptor**:
+   We'll use the Crypto Investment Recommendation Adaptor we created in UseCase 2:
+   ```
+   id: "adaptor-crypto-investment-v1"
+   name: "Crypto Investment Recommendation Adaptor"
+   outputFormat: "String[5]"  // Array of 5 recommended tokens
+   ```
+
+2. **Create the portfolio balancing adaptor**:
+
+```
+// Pseudocode for defining a PortfolioBalancingAdaptor
+
+// Define the adaptor configuration
+const adaptor = {
+  id: "adaptor-portfolio-balance-v1",
+  name: "Crypto Portfolio Balancing Adaptor",
+  input: {
+    sources: ["adaptor-crypto-investment-v1"]
+  },
+  coreLLM: "gpt-3.5",  // Simpler LLM is sufficient for this task
+  staticContext: `
+    Create a balanced portfolio allocation for the recommended tokens based on risk profile.
+    
+    Risk Profiles:
+    - Conservative: Allocate more to established assets (BTC, ETH). Max 15% to any single smaller cap.
+    - Moderate: Balance between established and growth assets. Max 20% to any single asset.
+    - Aggressive: Higher allocation to growth assets. Max 25% to any single asset.
+    
+    Always ensure:
+    1. Allocations sum to 100%
+    2. At least 10% is allocated to each recommended asset
+    3. The allocation considers market cap (larger cap = safer)
+    
+    Return the allocation as percentages with a brief explanation of the strategy.
+  `,
+  config: {
+    riskProfile: "moderate",  // default risk profile
+    rebalancingPeriod: "30d"  // how often to rebalance
+  },
+  outputFormat: "StringAndUint256Array"  // allocation text and percentage array
+};
+
+// Processing logic (handled by ADCS runtime)
+function createPortfolioAllocation(recommendedTokens) {
+  // The recommended tokens array from the investment adaptor
+  const tokens = recommendedTokens;
+  
+  // Get the risk profile from config
+  const riskProfile = adaptor.config.riskProfile;
+  
+  // Define allocation percentages based on risk profile and token position
+  let allocations = [];
+  let explanation = "";
+  
+  switch(riskProfile) {
+    case "conservative":
+      // Favor the most established assets (first in the list are likely larger cap)
+      allocations = [30, 25, 20, 15, 10];
+      explanation = "Conservative allocation favoring established cryptocurrencies";
+      break;
+      
+    case "moderate":
+      // More balanced approach
+      allocations = [25, 20, 20, 20, 15];
+      explanation = "Balanced allocation with moderate risk exposure";
+      break;
+      
+    case "aggressive":
+      // More evenly distributed with higher allocation to growth potential
+      allocations = [20, 20, 20, 20, 20];
+      explanation = "Aggressive allocation with equal exposure across recommended assets";
+      break;
+  }
+  
+  // Create the detailed allocation text
+  let allocationText = `${riskProfile.toUpperCase()} PORTFOLIO ALLOCATION\n\n`;
+  
+  tokens.forEach((token, index) => {
+    allocationText += `${token}: ${allocations[index]}%\n`;
+  });
+  
+  allocationText += `\nStrategy: ${explanation}\n`;
+  allocationText += `Recommended rebalancing: Every ${adaptor.config.rebalancingPeriod}`;
+  
+  // Return both the text explanation and the numeric allocations
+  return {
+    string: allocationText,
+    uint256Array: allocations
+  };
+}
+```
+
+#### Example Usage of the Portfolio Balancing Adaptor
+
+```
+// Pseudocode for using the adaptor
+
+// Set the risk profile (can be passed as a parameter)
+adaptorSystem.setAdaptorConfig("adaptor-portfolio-balance-v1", {
+  riskProfile: "aggressive"
+});
+
+// Call the adaptor (handled by ADCS runtime)
+const result = adaptorSystem.execute("adaptor-portfolio-balance-v1");
+
+// Example output:
+/*
+{
+  string: "AGGRESSIVE PORTFOLIO ALLOCATION
+
+  BTC: 20%
+  ETH: 20%
+  SOL: 20%
+  XRP: 20%
+  ADA: 20%
+
+  Strategy: Aggressive allocation with equal exposure across recommended assets
+  Recommended rebalancing: Every 30d",
+  
+  uint256Array: [20, 20, 20, 20, 20]
+}
+*/
+
+// This output can be used by a smart contract to automatically allocate funds
+// or by a portfolio management application
+```
+
+#### Key Features of This Adaptor
+
+1. **Builds on Existing Adaptor**: Uses output from the Investment adaptor, demonstrating adaptor chaining
+2. **Configurable Risk Profile**: Allows customization of allocation strategy based on risk tolerance
+3. **Dual Output Format**: Provides both human-readable explanation and machine-readable percentages
+4. **Domain-Specific Logic**: Applies portfolio theory principles to cryptocurrency allocation
+5. **Practical Application**: Creates immediately usable allocation instructions for automated trading
+
+This use case demonstrates how easily adaptors can be combined to build more complex and specialized functionality. By using the output of one adaptor as input to another, you can create sophisticated processing chains that transform raw data into highly actionable insights and instructions.
+
 ## Best Practices for Complex Adaptor 
 1. **Modularize Your Design**: Break complex logic into smaller, specialized adaptors
 2. **Reuse Adaptors**: Create adaptors that can be reused in multiple inputs
