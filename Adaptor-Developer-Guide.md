@@ -276,55 +276,6 @@ const adaptor = {
   },
   outputFormat: "StringAndUint256Array"  // allocation text and percentage array
 };
-
-// Processing logic (handled by ADCS runtime)
-function createPortfolioAllocation(recommendedTokens) {
-  // The recommended tokens array from the investment adaptor
-  const tokens = recommendedTokens;
-  
-  // Get the risk profile from config
-  const riskProfile = adaptor.config.riskProfile;
-  
-  // Define allocation percentages based on risk profile and token position
-  let allocations = [];
-  let explanation = "";
-  
-  switch(riskProfile) {
-    case "conservative":
-      // Favor the most established assets (first in the list are likely larger cap)
-      allocations = [30, 25, 20, 15, 10];
-      explanation = "Conservative allocation favoring established cryptocurrencies";
-      break;
-      
-    case "moderate":
-      // More balanced approach
-      allocations = [25, 20, 20, 20, 15];
-      explanation = "Balanced allocation with moderate risk exposure";
-      break;
-      
-    case "aggressive":
-      // More evenly distributed with higher allocation to growth potential
-      allocations = [20, 20, 20, 20, 20];
-      explanation = "Aggressive allocation with equal exposure across recommended assets";
-      break;
-  }
-  
-  // Create the detailed allocation text
-  let allocationText = `${riskProfile.toUpperCase()} PORTFOLIO ALLOCATION\n\n`;
-  
-  tokens.forEach((token, index) => {
-    allocationText += `${token}: ${allocations[index]}%\n`;
-  });
-  
-  allocationText += `\nStrategy: ${explanation}\n`;
-  allocationText += `Recommended rebalancing: Every ${adaptor.config.rebalancingPeriod}`;
-  
-  // Return both the text explanation and the numeric allocations
-  return {
-    string: allocationText,
-    uint256Array: allocations
-  };
-}
 ```
 
 #### Example Usage of the Portfolio Balancing Adaptor
@@ -428,7 +379,7 @@ const adaptor = {
     - Confidence level (Low, Medium, High)
     - Brief rationale combining both sentiment and fundamental factors
   `,
-  outputFormat: "StringArray"  // Array of trading decisions as formatted strings
+  outputFormat: "String[]"  // Array of trading decisions as formatted strings
 };
 ```
 
