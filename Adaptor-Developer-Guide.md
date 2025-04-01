@@ -377,6 +377,107 @@ const result = adaptorSystem.execute("adaptor-portfolio-balance-v1");
 
 This use case demonstrates how easily adaptors can be combined to build more complex and specialized functionality. By using the output of one adaptor as input to another, you can create sophisticated processing chains that transform raw data into highly actionable insights and instructions.
 
+### UseCase 4: Creating a Multi-Input Adaptor
+
+#### Description
+
+In this use case, we demonstrate how to create a multi-input adaptor that combines data from multiple existing adaptors to produce more comprehensive insights. Specifically, we'll create a "Smart Trading Strategy Adaptor" that takes inputs from both the Crypto Trend Adaptor (UseCase 1) and the Crypto Investment Recommendation Adaptor (UseCase 2) to generate trading decisions that consider both technical analysis and social sentiment.
+
+#### Step-by-Step Implementation
+
+1. **Identify the existing adaptors to use as inputs**:
+   
+   First adaptor - Crypto Trend Adaptor from UseCase 1:
+   ```
+   id: "adaptor-crypto-trend-v1"
+   name: "Cryptocurrency Trend Adaptor"
+   outputFormat: "StringAndBool"  // Sentiment analysis with buy signal
+   ```
+
+   Second adaptor - Crypto Investment Recommendation Adaptor from UseCase 2:
+   ```
+   id: "adaptor-crypto-investment-v1"
+   name: "Crypto Investment Recommendation Adaptor"
+   outputFormat: "String[5]"  // Array of 5 recommended tokens
+   ```
+
+2. **Create the multi-input adaptor**:
+
+```
+// Pseudocode for defining a SmartTradingStrategyAdaptor
+
+// Define the adaptor configuration
+const adaptor = {
+  id: "adaptor-smart-trading-v1",
+  name: "Smart Trading Strategy Adaptor",
+  input: {
+    sources: [
+      "adaptor-crypto-trend-v1",      // Social sentiment signals
+      "adaptor-crypto-investment-v1"  // Fundamental analysis recommendations
+    ]
+  },
+  coreLLM: "gpt-4",  // Complex decision-making requires a powerful LLM
+  staticContext: `
+    Create optimal trading decisions by combining social sentiment analysis with fundamental token recommendations.
+    
+    Decision rules:
+    1. If a token appears in the top 5 recommendations AND has positive social sentiment, recommend a STRONG BUY
+    2. If a token appears in the top 5 recommendations but has negative or neutral sentiment, recommend a WATCH
+    3. If the overall market sentiment is positive (trend adaptor returns true) but a token doesn't appear in recommendations, research further
+    4. If the overall market sentiment is negative (trend adaptor returns false), prioritize defensive assets like BTC/ETH
+    
+    For each trading decision, provide:
+    - Token symbol
+    - Action (STRONG BUY, BUY, WATCH, SELL, STRONG SELL)
+    - Time horizon (Short-term, Medium-term, Long-term)
+    - Confidence level (Low, Medium, High)
+    - Brief rationale combining both sentiment and fundamental factors
+  `,
+  outputFormat: "StringArray"  // Array of trading decisions as formatted strings
+};
+```
+
+#### Example Usage of the Multi-Input Adaptor
+
+```
+// Pseudocode for using the adaptor
+
+// Call the adaptor (handled by ADCS runtime)
+// This will automatically fetch data from both input adaptors
+const result = adaptorSystem.execute("adaptor-smart-trading-v1");
+
+// Example output:
+/*
+[
+  "BTC: STRONG BUY (Medium-term, High confidence)\nRationale: BTC shows strong fundamental indicators and positive social sentiment",
+  
+  "ETH: BUY (Medium-term, Medium confidence)\nRationale: ETH has strong fundamentals in a positive market environment",
+  
+  "SOL: WATCH (Medium-term, Medium confidence)\nRationale: SOL has potential but market sentiment suggests caution"
+]
+*/
+
+// This output can be used by trading applications or alert systems
+// Each string in the array represents one trading recommendation
+```
+
+#### Key Features of This Multi-Input Adaptor
+
+1. **Multiple Input Sources**: Combines data from two different adaptors, each with its own specialty
+2. **Cross-Domain Analysis**: Integrates social sentiment with technical/fundamental analysis
+3. **Weighted Decision Making**: Applies different weights to different data sources
+4. **Complex Logic**: Implements sophisticated decision rules using both data sources
+
+#### Benefits of Multi-Input Adaptors
+
+1. **Richer Context**: Decisions are made with more comprehensive information
+2. **Error Resilience**: Multiple data sources can compensate for each other's shortcomings
+3. **Cross-Validation**: Data from different sources can validate or question each other
+4. **Domain Integration**: Combines insights from different domains (technical, social, fundamental)
+5. **Flexible Architecture**: Input sources can be replaced or updated independently
+
+This use case demonstrates the power of multi-input adaptors to create more sophisticated and nuanced decision-making systems. By combining data from multiple specialized adaptors, you can create adaptors that offer more robust and comprehensive insights than any single data source could provide.
+
 ## Best Practices for Complex Adaptor 
 1. **Modularize Your Design**: Break complex logic into smaller, specialized adaptors
 2. **Reuse Adaptors**: Create adaptors that can be reused in multiple inputs
