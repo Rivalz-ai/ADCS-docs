@@ -222,6 +222,7 @@ const adaptor = {
 const result = adaptorSystem.execute("adaptor-crypto-investment-v1");
 
 // Example output: ["BTC", "ETH", "SOL", "XRP", "ADA"]
+```
 
 This use case demonstrates creating an adaptor that performs significant analysis and transformation on data from a provider. By applying filtering, scoring algorithms, and LLM-based analysis, the adaptor converts raw market data into actionable investment recommendations with explanations.
 
