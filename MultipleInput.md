@@ -213,3 +213,167 @@ Initial Request
   ]
 }
 ```
+
+## Apply to diagram
+
+Refined diagram
+
+![Multiple Inputs](images/MultipleInputRefined.png)
+
+This diagram shows the initial request with multiple flows:
+
+- Flow 1: IP1 => IA2 => IA3 => IA5
+- Flow 2: IP2 => IA3
+- Flow 3: IP2 => IA5
+- Flow 4: IP3 => IA5
+- Flow 5: IP4 => IA5
+
+1. Flow 1
+
+```json
+{
+  "name": "flow 1",
+  "description": "description of flow 1",
+  "type": "flow",
+  "steps": [
+    {
+      "name": "IP1",
+      "description": "P1Description",
+      "type": "provider",
+      "providerId": "P1ProviderId",
+      "input": { "input for IP1": "input for IP1" },
+      "output": { "output for IP1": "output for IP1" }
+    },
+    {
+      "name": "IA2",
+      "description": "IA2Description",
+      "type": "adapter",
+      "providerId": "IA2adapterId",
+      "input": { "input for IA2": "output of IP1" },
+      "output": { "output for flow 1": "output for flow 1" }
+    }
+  ]
+}
+```
+
+2. Flow 2
+
+```json
+{
+  "name": "flow 2",
+  "description": "analyze the market cap of the coin",
+  "type": "flow",
+  "steps": [
+    {
+      "name": "IP2",
+      "description": "P2Description",
+      "type": "provider",
+      "providerId": "P2ProviderId",
+      "input": { "input for IP2": "input for IP2" },
+      "output": { "output for flow2": "output for flow 2" }
+    }
+  ]
+}
+```
+
+3. Flow 3
+
+```json
+{
+  "name": "flow 3",
+  "description": "description of flow 3",
+  "type": "flow",
+  "steps": [
+    {
+      "name": "IP2",
+      "description": "P2Description",
+      "type": "provider",
+      "providerId": "P2ProviderId",
+      "input": { "input for IP2": "input for IP2" },
+      "output": { "output for flow 3": "output for flow 3" }
+    }
+  ]
+}
+```
+
+4. Flow 4
+
+```json
+{
+  "name": "flow 4",
+  "description": "description of flow 4",
+  "type": "flow",
+  "steps": [
+    {
+      "name": "IP3",
+      "description": "P3Description",
+      "type": "provider",
+      "providerId": "P3ProviderId",
+      "input": { "input for IP3": "input for IP3" },
+      "output": { "output for flow 4": "output for flow 4" }
+    }
+  ]
+}
+```
+
+5. Flow 5
+
+```json
+{
+  "name": "flow 5",
+  "description": "description of flow 5",
+  "type": "flow",
+  "steps": [
+    {
+      "name": "IP4",
+      "description": "P4Description",
+      "type": "provider",
+      "providerId": "P4ProviderId",
+      "input": { "input for IP4": "input for IP4" },
+      "output": { "output for flow 5": "output for flow 5" }
+    }
+  ]
+}
+```
+
+6. Initial Request
+
+```json
+{
+  "name": "initialRequest",
+  "description": "description of initialRequest",
+  "type": "initialRequest",
+  "flows": [
+    {
+      "name": "initial request 1(flow 1 + 2)",
+      "description": "description of flow 1 + 2",
+      "type": "initialRequest",
+      "flows": [
+        "flow1",
+        "flow2",
+        "core flow"{
+            "name": "core flow",
+            "description": "description of core flow",
+            "type": "core",
+            "providerId": "coreProviderId",
+            "input": { "input for core flow": "output of flow 1 + 2" },
+            "output": { "output for core flow": "output for core flow" }
+        }
+        ]
+    },
+    "flow3",
+    "flow4",
+    "flow5",
+    "core flow":{
+        "name": "core flow",
+        "description": "description of core flow",
+        "type": "core",
+        "providerId": "coreProviderId",
+        "input": { "input for core flow": "output of initial request 1 + flow 3 + 4 + 5", "prompt": "prompt for core flow" },
+        "output": { "output for core initial request": "output for core initial request" }
+    }
+    ]
+}
+```
+
+==> **The initial request has 4 flows and 1 other initial request. The core flow is the last one and the out put of this flow is the output of the initial request.**
