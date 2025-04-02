@@ -38,11 +38,12 @@ Each provider/adapter can have input parameters or not. And the input parameters
 
 ### flow entity
 
+Flow is a collection of steps. It run in sequence.
+
 - The flow entity is a json entity that contains the data of the flow.
 - It can combine of multiple step entities.
 - The input of the step is the output of the previous step.
 - The output of the step is the input of the next step.
-- The last one MUST be a core provider(AI LLM)
 
 The basic structure of the flow entity is:
 
@@ -57,12 +58,11 @@ The basic structure of the flow entity is:
 
 ### Initial Request entity
 
+Initial Request is a collection of flows. It run in parallel.
+
 - The initial request entity is a json entity that contains the data of the initial request.
 - It can combine of multiple flow entities.
-- The input of the flow is the output of the previous flow.
-- The output of the flow is the input of the next flow.
-- The last one MUST be a core provider(AI LLM)
-- The output of the last flow is the output of the initial request.
+- The last flow is the core flow. It use the output of all flows as the input and the output of the initial request is the output of the core flow.
 
 The basic structure of the initial request entity is:
 
@@ -71,7 +71,7 @@ The basic structure of the initial request entity is:
   "name": "name",
   "description": "description",
   "type": "initialRequest",
-  "flows": [flow1, flow2, flow3]
+  "flows": [flow1, flow2, flow3, "core flow"]
 }
 ```
 
@@ -115,20 +115,19 @@ Flow 2
       "type": "provider",
       "providerId": "123",
       "input": { "coinName": "BTC", "currency": "USD" },
-      "output": { "price": 10000 }
+      "output": { "coinName": "BTC", "price": 10000 }
     },
     {
       "name": "analyst",
       "description": "analyze the price of the coin",
       "type": "provider",
-      "456": {
-        "input": {
-          "coinName": "BTC",
-          "price": 10000,
-          "AI prompt": "analyze the price of the coin, the output is a json format with the key is 'analysis'"
-        },
-        "output": { "analysis": "good" }
-      }
+      "providerId": "456",
+      "input": {
+        "coinName": "BTC",
+        "price": 10000,
+        "AI prompt": "analyze the price of the coin, the output is a json format with the key is 'analysis'"
+      },
+      "output": { "coinName": "BTC", "analysis": "good" }
     }
   ]
 }
@@ -161,14 +160,13 @@ Initial Request
           "name": "analyst",
           "description": "analyze the price of the coin",
           "type": "provider",
-          "456": {
-            "input": {
-              "coinName": "BTC",
-              "price": 10000,
-              "AI prompt": "analyze the price of the coin, the output is a json format with the key is 'analysis'"
-            },
-            "output": { "coinName": "BTC", "analysis": "good" }
-          }
+          "providerId": "456",
+          "input": {
+            "coinName": "BTC",
+            "price": 10000,
+            "AI prompt": "analyze the price of the coin, the output is a json format with the key is 'analysis'"
+          },
+          "output": { "coinName": "BTC", "analysis": "good" }
         }
       ]
     },
@@ -376,4 +374,4 @@ This diagram shows the initial request with multiple flows:
 }
 ```
 
-==> **The initial request has 4 flows and 1 other initial request. The core flow is the last one and the out put of this flow is the output of the initial request.**
+==> **The initial request has 4 flows and 1 nested initial request. The core flow is the last one and the out put of this flow is the output of the initial request.**
