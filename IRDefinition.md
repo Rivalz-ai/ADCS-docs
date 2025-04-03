@@ -1,6 +1,6 @@
 # IR Definition
 
-- Initial request is a dynamic object that combine all inputs in the node definition.
+- Initial request is a dynamic object that contain all inputs in the node definition.
 - Adapter/Provider: have a static definition of the input and output schema.
 
 ```json
@@ -46,24 +46,24 @@
 
 ```json
 {
-  "IR1": {
+  "ParamSet1": {
     "fields": {
       "value1": "string",
       "value2": "number"
     }
   },
-  "IR2": {
+  "ParamSet2": {
     "fields": {
       "value1": "string",
       "value2": "boolean"
     }
   },
-  "IR3": {
+  "ParamSet3": {
     "fields": {
       "value1": "string"
     }
   },
-  "IR4": {
+  "ParamSet4": {
     "fields": {
       "value1": "string"
     }
@@ -75,10 +75,10 @@
 
 ```json
 [
-  { "id": "P1", "type": "provider", "input": ["IR1"], "output": "OP1" },
-  { "id": "P2", "type": "provider", "input": ["IR2"], "output": "OP2" },
-  { "id": "P3", "type": "provider", "input": ["IR3"], "output": "OP3" },
-  { "id": "A4", "type": "adapter", "input": ["IR4"], "output": "OA4" },
+  { "id": "P1", "type": "provider", "input": ["IR.ParamSet1"], "output": "OP1" },
+  { "id": "P2", "type": "provider", "input": ["IR.ParamSet2"], "output": "OP2" },
+  { "id": "P3", "type": "provider", "input": ["IR.ParamSet3"], "output": "OP3" },
+  { "id": "A4", "type": "adapter", "input": ["IR.ParamSet4"], "output": "OA4" },
   { "id": "A2", "type": "adapter", "input": ["OP1"], "output": "OA2" },
   { "id": "A3", "type": "adapter", "input": ["OA2", "OP2"], "output": "OA3" },
   { "id": "P5", "type": "provider", "input": ["OP2", "OP3", "OA3", "OA4"], "output": "OA5" }
@@ -92,10 +92,16 @@
 
 **Process order:**
 
-- P1 with input value from IR1 -> OP1
-- P2 with input value from IR2 -> OP2
-- P3 with input value from IR3 -> OP3
-- A4 with input value from IR4 -> OA4
+- P1 with input value from IR.ParamSet1 -> OP1
+- P2 with input value from IR.ParamSet2 -> OP2
+- P3 with input value from IR.ParamSet3 -> OP3
+- A4 with input value from IR.ParamSet4 -> OA4
 - A2 with input value from OP1 -> OA2
 - A3 with input value from OA2 and OP2 -> OA3
 - P5 with input value from OP2, OP3, OA3, OA4 -> OP5
+
+**Note**
+
+- The set of nodes will process in sequence, and the output of each node will be used as input for the next node.
+- The output of the last node will be the output of the set of nodes.
+- If 1 node not return any value, the set of nodes will be break and return an empty object.
