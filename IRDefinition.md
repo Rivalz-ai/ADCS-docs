@@ -5,13 +5,13 @@
 
 ```json
 {
-  "IR1": {
+  "ParamSet1": {
     "fields": {
       "value1": "string",
       "value2": "number"
     }
   },
-  "IR2": {
+  "ParamSet2": {
     "fields": {
       "value1": "string",
       "value2": "number"
@@ -28,7 +28,7 @@
 {
   "id": "P1",
   "type": "provider",
-  "input": ["IR"],
+  "input": ["IR.ParamSet1"],
   "output": "OP1"
 }
 ```
@@ -71,7 +71,7 @@
 }
 ```
 
-**Nodes definition:**
+**Node definition:**
 
 ```json
 [
