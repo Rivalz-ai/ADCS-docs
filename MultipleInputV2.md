@@ -1,6 +1,6 @@
 # Provider
 
-- Provider can has an input or doen't has an input(empty array)
+- Provider must has an input
 - Provider must have an output
 
 ```json
@@ -33,8 +33,8 @@
 # Adapter
 
 - Adapter can be created by one or more adapters/providers
-- Adapter can has input as an array or doesn't has input(empty array)
-- Adapter must has output data as an array
+- Adapter must has input
+- Adapter must has output
 
 ```json
 {
