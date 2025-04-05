@@ -46,11 +46,11 @@
 }
 ```
 
-- name: name to display on our web application
-- description: describe about your adapter
-- input: json object
-- output: json object
-- nodes: set of node process for adapter
+- `name`: name to display on our web application
+- `description`: describe about your adapter
+- `input`: json object
+- `output`: json object
+- `nodes`: set of node process for adapter
 
 **node**
 
@@ -214,7 +214,7 @@
         "id": "P3",
         "type": "provider",
         "input": {"prompt":"Base on this data please give me a decision should buy or sell coin. The output is json format like this {A1Output}
-        Data: {getPriceOutput,getCoinMarketCapOutput}".},
+        Data: {getPriceOutput,getCoinMarketCapOutput}"},
         "output": "A1Output"
     }
   ]
