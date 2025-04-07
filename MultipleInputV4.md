@@ -85,7 +85,7 @@
 - `output`: json object
 - `nodes`: set of node process for adapter
 
-**Node**
+# Node
 
 ```json
 {
@@ -103,7 +103,7 @@
 - `input`: array json objects with the item is the same object type. For example: ["getPriceValue1","getPriceValue2"] with getPriceValue is json object type
 - `output`: json object
 
-**Graph flow**
+# Graph flow
 
 ```json
 [
