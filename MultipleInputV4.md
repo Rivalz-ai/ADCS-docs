@@ -6,6 +6,7 @@ Provider is defined by a structured JSON configuration as follows:
 
 ```json
 {
+  "id": "id of the provider",
   "name": "provider name",
   "description": "description for provider",
   "icon_url": "icon url",
@@ -35,7 +36,7 @@ Provider is defined by a structured JSON configuration as follows:
   ]
 }
 ```
-
+- `id`: id of the provider
 - `name`: The provider name to show on web application
 - `description`: Describe about your provider like what is purpose of this provider... or how to run your provider
 - `icon_url`: The icon of the provider to show on our web application
@@ -65,9 +66,31 @@ An initial should have these properties:
 `adapterID` is the id of the adapter that will be used to process the initial request.
 `params` is the parameters that will be used as inputs for every entity in the adapter.
 
-# III.  Adapter
+# III. Node
+A Node is a processing unit within the ADCS system that represents either a provider, an adapter. A node should have these properties:
+
+- `id`: id of the node
+- `node_type`: nodeType of the node
+- `input`: input of the node
+- `input_method`: input method of the node
+- `output`: output of the node
+
+# Example:
+
+```json
+{
+  "id": "P1",
+  "node_type": "provider",
+  "input": ["IR.coinSymbol"],
+  "input_method": "getPrice",
+  "output": "priceData"
+}
+```
+
+# IV.  Adapter
 
 Adaptors serve as the intermediary processing layers that allow complex data transformations from multiple input sources and return an executable output format. Adaptor should have these properties:
+
 - `id`: id of the adapter
 - `name`: name to display on our web application
 - `description`: describe about your adapter
@@ -75,8 +98,6 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
 - `input_schema`: json object
 - `output_schema`: json object
 - `nodes`: 1 or a set of nodes
-
-## A Node is a processing unit within the ADCS system that represents either a provider, an adapter
 
 # 1. Single input adapter: is an adapter that take 1 adaptor OR provider as input.
 
@@ -88,7 +109,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
   "icon": "",
   "input_schema": {"json object"},
   "output_schema": {"json object"},
-  "nodes": [nodeID, input, output]
+  "nodes": [nodeID, node_type, input, input_method, output]
 }
 ```
 
@@ -98,7 +119,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
 - `icon`: icon to display on our web application
 - `input_schema`: json object
 - `output_schema`: json object
-- `nodes`: Adapter|provider ID, input, output
+- `nodes`: Adapter|provider ID, input, input_method, output
 
 # Example of a single input adapter
 
@@ -110,12 +131,21 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
   "icon": "https://icon.ai/sentiment.png",
   "input_schema": {"newsText": "string"},
   "output_schema": {"score": "number"},
-  "nodes": [{P1, IR, OP1}]
+    "nodes": [
+     {
+        "id": "P1",
+        "node_type": "provider",
+        "input": ["IR.coinSymbol"],
+        "input_method": "getPrice",
+        "output": "OP1"
+      }
+      ]
 }
 ```
-The Output OP1 í the final output of the adapter.
+The Output OP1 is the final output of the adapter A1.
 
 # 2. Graph flow
+
 A graphFlow is an adapter that contains multiple nodes. It defines the execution pathway of data through the ADCS system, represented as an array of nodes
 
 ```json
@@ -127,8 +157,9 @@ A graphFlow is an adapter that contains multiple nodes. It defines the execution
   "input_schema": {"json object"},
   "output_schema": {"json object"},
   "nodes": [
-    {nodeID, input1, output1},
-    {nodeID, input2, output2},
+    {P1},
+    {P2},
+    {A1},
     ...
     ]
 }
@@ -147,11 +178,13 @@ A graphFlow is an adapter that contains multiple nodes. It defines the execution
     { 
       "id": "P1", 
       "input": ["IR.coinSymbol"], 
+      "input_method": "getPrice",
       "output": "priceData" 
     },
     { 
       "id": "A1", 
       "input": ["priceData"], 
+      "input_method": "AnalyzePriceData",
       "output": "output_schema" 
     }
   ]
