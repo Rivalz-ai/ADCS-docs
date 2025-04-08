@@ -17,9 +17,9 @@ Provider is defined by a structured JSON configuration as follows:
       "method_name": "method 1",
       "endpoint": "",
       "description": "description for method 1",
-      "input_schema": {Json Object},
+      "input_schema": {"Json Object"},
       "input_type": "QueryParams|BodyParams",
-      "output_schema": {Json Object},
+      "output_schema": {"Json Object"},
       "type": "GET|POST",
       "playground": "playground url"
     },
@@ -27,9 +27,9 @@ Provider is defined by a structured JSON configuration as follows:
       "method_name": "method 2",
       "endpoint": "",
       "description": "description for method 2",
-      "input_schema": {Json Object},
+      "input_schema": {"Json Object"},
       "input_type": "QueryParams|BodyParams",
-      "output_schema": {Json Object},
+      "output_schema": {"Json Object"},
       "type": "GET|POST",
       "playground": "playground url"
     }
@@ -109,7 +109,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
   "icon": "",
   "input_schema": {"json object"},
   "output_schema": {"json object"},
-  "nodes": [nodeID, node_type, input, input_method, output]
+  "nodes": [{"nodeID": "id of the node", "node_type": "nodeType of the node", "input": "input of the node", "input_method": "input method of the node", "output": "output of the node"}]
 }
 ```
 
@@ -157,9 +157,9 @@ A graphFlow is an adapter that contains multiple nodes. It defines the execution
   "input_schema": {"json object"},
   "output_schema": {"json object"},
   "nodes": [
-    {P1},
-    {P2},
-    {A1},
+    {"id": "P1", "node_type": "provider", "input": "input of the node", "input_method": "input method of the node", "output": "output of the node"},
+    {"id": "P2", "node_type": "provider", "input": "input of the node", "input_method": "input method of the node", "output": "output of the node"},
+    {"id": "A1", "node_type": "adapter", "input": "input of the node", "input_method": "input method of the node", "output": "output of the node"},
     ...
     ]
 }
