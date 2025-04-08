@@ -113,6 +113,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
   "nodes": [{P1, IR, OP1}]
 }
 ```
+The Output OP1 í the final output of the adapter.
 
 # 2. Graph flow
 A graphFlow is an adapter that contains multiple nodes. It defines the execution pathway of data through the ADCS system, represented as an array of nodes
