@@ -1,6 +1,7 @@
 # I. Provider
 
 Providers are designed to be reusable components that serve as the foundational data sources that Adaptors can then build upon, transform, and combine. They encapsulate the details of connecting to external data sources and standardize the way data is fetched and formatted within the ADCS system.
+
 Provider is defined by a structured JSON configuration as follows:
 
 ```json
@@ -77,7 +78,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
 
 ## A Node is a processing unit within the ADCS system that represents either a provider, an adapter
 
-#1. Single input adapter: is an adapter that take 1 adaptor OR provider as input.
+# 1. Single input adapter: is an adapter that take 1 adaptor OR provider as input.
 
 ```json
 {
@@ -162,3 +163,7 @@ This Graph Flow:
 - A1 uses AI to analyze the data and determine if it's a good time to buy
 - Outputs a boolean decision and reasoning
 Just two nodes connected in sequence for a basic price analysis workflow.
+
+## Disclaimer
+
+The ADCS framework represents experimental technology. Implementation details, specifications, and best practices may change as the system evolves.
