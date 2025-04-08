@@ -67,7 +67,7 @@ An initial should have these properties:
 # III.  Adapter
 
 Adaptors serve as the intermediary processing layers that allow complex data transformations from multiple input sources and return an executable output format. Adaptor should have these properties:
-
+- `id`: id of the adapter
 - `name`: name to display on our web application
 - `description`: describe about your adapter
 - `icon`: icon to display on our web application
@@ -81,6 +81,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
 
 ```json
 {
+  "id": "id of the adapter",
   "name": "",
   "description": "",
   "icon": "",
@@ -90,6 +91,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
 }
 ```
 
+- `id`: id of the adapter 
 - `name`: name to display on our web application
 - `description`: describe about your adapter
 - `icon`: icon to display on our web application
@@ -101,6 +103,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
 
 ```json
 {
+  "id": "A1",
   "name": "Sentiment Analysis Adaptor",
   "description": "Analyzes sentiment from crypto-related news data and determines if it's positive or negative",
   "icon": "https://icon.ai/sentiment.png",
@@ -115,6 +118,7 @@ A graphFlow is an adapter that contains multiple nodes. It defines the execution
 
 ```json
 {
+  "id": "",
   "name": "",
   "description": "",
   "icon": "",
@@ -131,6 +135,7 @@ A graphFlow is an adapter that contains multiple nodes. It defines the execution
 
 ```json
 {
+  "id": "GF1",
   "name": "Simple Price Analyzer",
   "description": "Gets price data and determines if it's a good time to buy",
   "icon": "https://icon.ai/simple-analyzer.png",
@@ -139,15 +144,11 @@ A graphFlow is an adapter that contains multiple nodes. It defines the execution
   "nodes": [
     { 
       "id": "P1", 
-      "type": "provider", 
-      "input": ["input_schema.coinSymbol"], 
-      "input_method": "getPrice", 
+      "input": ["IR.coinSymbol"], 
       "output": "priceData" 
     },
     { 
       "id": "A1", 
-      "type": "adapter", 
-      "llm_id": "gpt-3.5",
       "input": ["priceData"], 
       "output": "output_schema" 
     }
@@ -158,6 +159,6 @@ This Graph Flow:
 - Takes a coin symbol as input (like "BTC")
 - Uses provider P1 to fetch price data
 - Passes that price data to adapter A1
-- A1 uses GPT-3.5 to analyze the data and determine if it's a good time to buy
+- A1 uses AI to analyze the data and determine if it's a good time to buy
 - Outputs a boolean decision and reasoning
 Just two nodes connected in sequence for a basic price analysis workflow.
