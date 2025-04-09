@@ -54,8 +54,7 @@ Provider is defined by a structured JSON configuration as follows:
 
 # II. Initial Request.
 
-The initial request starts the data processing pipeline by providing the source data that flows through the various providers and adaptors. In ADCS onchain usescase, it is the event that emitted after the user call a `Request()` function on their consumer contract.
-An initial should have these properties:
+An Initial Request is like pressing the "Start" button for the ADCS system. It should have these properties:
 
 ```json
 {
@@ -63,14 +62,16 @@ An initial should have these properties:
   "params": {"json object"},
 }
 ```
-`adapterID` is the id of the adapter that will be used to process the initial request.
-`params` is the parameters that will be used as inputs for every entity in the adapter.
+`adapterID` Identify which adapter should handle your request
+`params` is the parameters that will be used as inputs for entities in the adapter.
 
-# III. Node
-A Node is a processing unit within the ADCS system that represents either a provider, an adapter. A node should have these properties:
+# III.  Adapter
+
+# 1. Node
+Node is a processing unit within the ADCS system that represents either a provider, an adapter. A node should have these properties:
 
 - `id`: id of the node
-- `node_type`: nodeType of the node
+- `node_type`: Provider|Adapter
 - `input`: input of the node
 - `input_method`: input method of the node
 - `output`: output of the node
@@ -87,7 +88,7 @@ A Node is a processing unit within the ADCS system that represents either a prov
 }
 ```
 
-# IV.  Adapter
+# 2. Adaptor
 
 Adaptors serve as the intermediary processing layers that allow complex data transformations from multiple input sources and return an executable output format. Adaptor should have these properties:
 
@@ -99,7 +100,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
 - `output_schema`: json object
 - `nodes`: 1 or a set of nodes
 
-# 1. Single input adapter: is an adapter that take 1 adaptor OR provider as input.
+# 2.1 Single input adapter: is an adapter that take 1 adaptor OR provider as input.
 
 ```json
 {
@@ -144,7 +145,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
 ```
 The Output OP1 is the final output of the adapter A1.
 
-# 2. Graph flow
+# 2.2 Graph flow
 
 A graphFlow is an adapter that contains multiple nodes. It defines the execution pathway of data through the ADCS system, represented as an array of nodes
 
