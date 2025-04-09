@@ -63,6 +63,7 @@ An Initial Request is like pressing the "Start" button for the ADCS system. It s
 }
 ```
 `adapterID` Identify which adapter should handle your request
+
 `params` is the parameters that will be used as inputs for entities in the adapter.
 
 # III.  Adapter
