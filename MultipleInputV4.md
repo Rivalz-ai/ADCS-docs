@@ -53,6 +53,46 @@ Provider is defined by a structured JSON configuration as follows:
 - Only one key-pair value is currently supported in the `input_schema`
 - Nested objects are not supported at this time
 
+# Example of a provider
+
+```json
+{
+  "id": "P1",
+  "name": "Crypto Market Data Provider",
+  "description": "Provides cryptocurrency market data including price, volume, and market cap information",
+  "icon_url": "https://icon.ai/crypto-provider.svg",
+  "methods": [
+    {
+      "method_name": "getPrice",
+      "description": "Retrieves the current price of a cryptocurrency by symbol",
+      "input_schema": {"coinSymbol": "string"},
+      "input_type": "QueryParams",
+      "output_schema": {"coinSymbol": "string", "price": "number", "timestamp": "number"},
+      "type": "GET",
+      "playground": "https://api.example.com/playground/crypto/price?coinSymbol=BTC"
+    },
+    {
+      "method_name": "getVolume",
+      "description": "Retrieves 24-hour trading volume for a cryptocurrency",
+      "input_schema": {"coinSymbol": "string"},
+      "input_type": "QueryParams",
+      "output_schema": {"coinSymbol": "string", "volume": "number", "timestamp": "number"},
+      "type": "GET",
+      "playground": "https://api.example.com/playground/crypto/volume?coinSymbol=BTC"
+    },
+    {
+      "method_name": "getMarketCap",
+      "description": "Retrieves current market capitalization for a cryptocurrency",
+      "input_schema": {"coinSymbol": "string"},
+      "input_type": "QueryParams",
+      "output_schema": {"coinSymbol": "string", "marketCap": "number", "timestamp": "number"},
+      "type": "GET",
+      "playground": "https://api.example.com/playground/crypto/marketcap?coinSymbol=BTC"
+    }
+  ]
+}
+```
+
 # II. Initial Request.
 
 An Initial Request is like pressing the "Start" button for the ADCS system. It should have these properties:
@@ -181,7 +221,8 @@ With this approach, we can create various types of adaptors with different input
 }
 ```
 # In the above example, we're using `P1` as a node in `A1` Graph Flow, and `IR.coinSymbol` is the input of `P1`
-`P1` definition:
+
+Let's use `P1` definition in the above `provider` example.
 
 ```json
 {
