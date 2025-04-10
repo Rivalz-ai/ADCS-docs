@@ -210,7 +210,7 @@ With this approach, we can create various types of adaptors with different input
   "staticContext": "Provide the score for a crypto currency based on the price provided",
   "input_schema": {"newsText": "string"},
   "output_schema": {"score": "number"},
-    "nodes": [
+    "graphFlow": [
      {
         "id": "P1",
         "input": ["IR.coinSymbol"],
@@ -277,6 +277,55 @@ Let's use `P1` definition in the above `provider` example.
 - The output of P1 will be passed to A1
 - A1 will use the output of P1 as an input, combine with the static context and coreLLM to generate the final output
 - The final output of A1 will be the score for "BTC"
+
+# Example of a multiple input adapter, using `A1` and `P1` from the above example as one of the inputs.
+
+```json
+{
+  "id": "A3",
+  "name": "In depth analysis of a crypto currency",
+  "description": "Combines sentiment analysis with market volume and price data to create a comprehensive investment strategy",
+  "icon": "https://icon.ai/comprehensive-analysis.svg",
+  "coreLLM": "gpt-4",
+  "staticContext": "Create a holistic investment recommendation by analyzing sentiment alongside volume and price data. Weight recent sentiment data at 40%, volume trends at 30%, and price action at 30%. Look for divergences between sentiment and price action as potential reversal signals. Identify patterns where volume precedes price movement.",
+  "input_schema": {"targetAsset": "string"},
+  "output_schema": {"recommendation": "string", "riskScore": "number"},
+  "GraphFlow": [
+    {
+      "id": "A1",
+      "input": ["IR.targetAsset"],
+      "input_method": "",
+      "output": "sentimentScore"
+    },
+    {
+      "id": "P1",
+      "input": ["IR.targetAsset"],
+      "input_method": "getVolume",
+      "output": "volumeData"
+    },
+    {
+      "id": "P1",
+      "input": ["IR.targetAsset"],
+      "input_method": "getMarketCap",
+      "output": "priceData"
+    }
+  ] 
+}
+```
+# To execute this `A3` with `ETH`, you can define the IR as follows:
+
+```json
+{
+  "adapterID": "A3",
+  "params": {"targetAsset": "ETH"}
+}
+``` 
+# the execution flow will be as follows:
+- P1 will be executed first with the method `getPrice` and the input `ETH` to get ETH price (OP1)
+- OP1 will be passed to A1 to get the sentiment score for `ETH` (OA1)
+- P1 will be executed with the method `getVolume` and the input `ETH` to get ETH volume (OP2)
+- P2 will be executed with the method `getMarketCap` and the input `ETH` to get ETH market cap (OP3)
+- OA1, OP2, and OP3 will be passed to A3 to get the recommendation and risk score for `ETH`
 
 ## Disclaimer
 
