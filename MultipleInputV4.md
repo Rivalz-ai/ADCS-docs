@@ -112,7 +112,7 @@ An Initial Request is like pressing the "Start" button for the whole pipeline of
 `params` Contains multiple key-value pairs that will be used as inputs for entities in the adapter.
   - Example: `{"coinName":"Btc", "aggressiveness":"high"}` 
   
-# How to figure out what params to provide?
+# How to figure out what params to provide to the IR
 
 1. In the playground
 - We will provide a playground for each adaptor. In each playground, you can see all needed parameters. 
