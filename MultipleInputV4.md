@@ -126,6 +126,42 @@ An Initial Request is like pressing the "Start" button for the whole pipeline of
 
 # Example:
 
+In the consumer contract, you should have a function like this:
+
+```solidity
+    function request(
+        string calldata adapterId,
+        string calldata paramsJson
+    ) external payable returns (uint256 requestId) {
+        // Ensure payment meets minimum requirement
+        require(msg.value >= requestFee, "Insufficient payment for request");
+        
+        // Generate unique request ID
+        requestId = ++requestCounter;
+        
+        // Store request information
+        requests[requestId] = RequestStatus({
+            fulfilled: false,
+            exists: true,
+            result: bytes(""),
+            requester: msg.sender,
+            adapterId: adapterId,
+            params: paramsJson
+        });
+        
+        // Forward payment to fee recipient
+        (bool sent, ) = feeRecipient.call{value: msg.value}("");
+        require(sent, "Failed to send fee to recipient");
+        
+        // Notify ADCS oracle about the new request (via event)
+        emit RequestSent(requestId, adapterId, paramsJson, msg.sender);
+        
+        return requestId;
+    }
+```
+
+You can call the request function with the adaptor ID `A1` and the params `{"coinSymbol":"BTC"}`
+
 ```javascript
 
   CONSUMER_CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890"
@@ -155,11 +191,8 @@ An Initial Request is like pressing the "Start" button for the whole pipeline of
   } catch (error) {
     console.error("Error making request:", error);
     throw error;
-  }
-
-
-// Execute the function
-makeAdapterRequest()
+  }// Execute the function
+  makeAdapterRequest()
   .then(requestId => {
     console.log(`Now waiting for request ${requestId} to be fulfilled...`);
     // Add code here to listen for the fulfillment event
