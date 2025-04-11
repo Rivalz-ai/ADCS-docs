@@ -95,7 +95,7 @@ Provider is defined by a structured JSON configuration as follows:
 
 # II. Initial Request.
 
-An Initial Request is like pressing the "Start" button for the ADCS system. It should have these properties:
+An Initial Request is like pressing the "Start" button for the whole pipeline of an adaptor. It should have these properties:
 
 ```json
 {
@@ -103,6 +103,7 @@ An Initial Request is like pressing the "Start" button for the ADCS system. It s
   "params": {"key": "value", "key2": "value2", "key3": "value3"}
 }
 ```
+
 `adapterID` Identify which adapter should handle your request. The system will:
 - Look up the adaptor with this ID
 - Verify all components and their respective parameters that you should provide.
