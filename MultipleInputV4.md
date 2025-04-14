@@ -57,7 +57,7 @@ Provider is defined by a structured JSON configuration as follows:
 
 ```json
 {
-  "id": "P1",
+  "id": "P2843923827",
   "name": "Crypto Market Data Provider",
   "description": "Provides cryptocurrency market data including price, volume, and market cap information",
   "icon_url": "https://icon.ai/crypto-provider.svg",
@@ -160,7 +160,7 @@ In the consumer contract, you should have a function like this:
     }
 ```
 
-You can call the request function with the adaptor ID `A1` and the params `{"coinSymbol":"BTC"}`
+You can call the request function with the adaptor ID `A74523698` and the params `{"coinSymbol":"BTC"}`
 
 ```javascript
 
@@ -234,30 +234,20 @@ Adapter Node A1:
 {
   "id": "A1",
   "input": ["OP1"],
-  "input_method": "Analyze",
-  "output": "OA1"
-}
-```
-
-Adapter Node A1 can also be defined as:
-
-```json
-{
-  "id": "A1",
-  "input": ["OP1"],
   "input_method": "",
   "output": "OA1"
 }
 ```
-
-# 2 Graph flow
+# 2. Nodes and Graph flow
 
 A graphFlow is an attribute of an adaptor. It defines the execution pathway of data through the ADCS system, represented as an array of nodes
+You need to initialize the Nodes first before you can use them in the graphFlow.
 
 # Example
 
 ```json
 {
+  "Nodes": {"P1": "P2843923827", "A1": "A74523698", "A2": "A74523698"},
   "GraphFlow": [
     {"id": "P1", "input": "IR.key1", "input_method": "methodName", "output": "OP1"},
     {"id": "A1", "input": "OP1", "input_method": "", "output": "OA1"},
@@ -288,6 +278,7 @@ Adaptors serve as the intermediary processing layers that allow complex data tra
   - Optional. In case you want to use an inference provider, you can leave it empty.
 - `staticContext`: extra prompt to the LLM
   - Optional. In case you dont want to use any extra context, you can leave it empty.
+- `Nodes`: Initialize the nodes first before you can use them in the graphFlow
 - `graphFlow`: 1 or a set of nodes
 
 With this approach, we can create various types of adaptors with different input and output schema, depending on the use case.
@@ -304,6 +295,7 @@ With this approach, we can create various types of adaptors with different input
   "staticContext": "Provide the score for a crypto currency based on the price provided",
   "input_schema": {"newsText": "string"},
   "output_schema": {"score": "number"},
+  "Nodes": {"P1": "P2843923827"},
     "graphFlow": [
      {
         "id": "P1",
@@ -376,7 +368,7 @@ Let's use `P1` definition in the above `provider` example.
 
 ```json
 {
-  "id": "A3",
+  "id": "A52369874",
   "name": "In depth analysis of a crypto currency",
   "description": "Combines sentiment analysis with market volume and price data to create a comprehensive investment strategy",
   "icon": "https://icon.ai/comprehensive-analysis.svg",
@@ -384,33 +376,34 @@ Let's use `P1` definition in the above `provider` example.
   "staticContext": "Create a holistic investment recommendation by analyzing sentiment alongside volume and price data. Weight recent sentiment data at 40%, volume trends at 30%, and price action at 30%. Look for divergences between sentiment and price action as potential reversal signals. Identify patterns where volume precedes price movement.",
   "input_schema": {"targetAsset": "string"},
   "output_schema": {"recommendation": "string", "riskScore": "number"},
+  "Nodes": {"P1": "P2843923827", "A1": "A74523698"},
   "GraphFlow": [
     {
       "id": "A1",
       "input": ["IR.targetAsset"],
       "input_method": "",
-      "output": "sentimentScore"
+      "output": "OA1"
     },
     {
       "id": "P1",
       "input": ["IR.targetAsset"],
       "input_method": "getVolume",
-      "output": "volumeData"
+      "output": "OP1"
     },
     {
       "id": "P1",
       "input": ["IR.targetAsset"],
       "input_method": "getMarketCap",
-      "output": "priceData"
+      "output": "OP2"
     }
   ] 
 }
 ```
-# To execute this `A3` with `ETH`, you can define the IR as follows:
+# To execute this `A52369874` with `ETH`, you can define the IR as follows:
 
 ```json
 {
-  "adapterID": "A3",
+  "adapterID": "A52369874",
   "params": {"targetAsset": "ETH"}
 }
 ``` 
