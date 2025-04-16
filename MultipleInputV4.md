@@ -214,6 +214,8 @@ Node is a processing unit within the ADCS system that represents either a provid
   - for provider: the method name of the provider
   - for adapter: You should leave this empty
 - `output`: output of the node
+  - You should standardize the naming of these outputs. Eg. OP1 for Output of provider 1
+  - These outputs can used as inputs for other nodes in the GraphFlow
 
 # Example:
 
