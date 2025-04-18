@@ -73,7 +73,7 @@ Commit and raise PR for your change.
 
 **4. Provide api key(optional).**
 
-If your provider need to have a key to use. Please provider a key by this [link](https://adcs.rivalz.ai/provider/key)
+If your provider need to have a key to use. Please provider a key by this [link](https://adcs.rivalz.ai/provider/key) (This page not have yet, need to design the page)
 
 The information includes:
 

@@ -63,7 +63,7 @@ Congratuation! Adcs cli is ready to use.
 
 ## 2. Register a key to use CLI
 
-To use adcs cli, you need to register a key [here](https://adcs.rivalz.ai/dashboard)
+To use adcs cli, you need to register a key [here](https://adcs.rivalz.ai/dashboard) (This page not have yet, need to design the page)
 
 - Login with your wallet
 - Go to dashboard page
