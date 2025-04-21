@@ -78,5 +78,6 @@ If your provider need to have a key to use. Please provider a key by this [link]
 The information includes:
 
 - Your PR link: after creating new PR, copy the link of your PR like this https://github.com/Rivalz-ai/ADCS-core/pull/10000
+- Provider API endpoint: the endpoint to your API
 - Provider api key: api key to use your provider
 - Click 'Submit' button to finish
