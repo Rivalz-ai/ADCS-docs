@@ -71,13 +71,16 @@ Provider's structure and description here
 
 Commit and raise PR for your change.
 
-**4. Provide api key(optional).**
+**4. Fill in the Provider submission form.**
 
-If your provider need to have a key to use. Please provider a key by this [link](https://adcs.rivalz.ai/provider/key) (This page not have yet, need to design the page)
-
-The information includes:
-
-- Your PR link: after creating new PR, copy the link of your PR like this https://github.com/Rivalz-ai/ADCS-core/pull/10000
-- Provider API endpoint: the endpoint to your API
-- Provider api key: api key to use your provider
-- Click 'Submit' button to finish
+Go to this [link] and provide us the following information
+- API endpoint: the URL to you endpoint. example: https://api.github.com/repos/openai/gym
+- API key: You should provide the key name and key value to access the endpoint. example: {"key_name": "github_api_key", "key_value": "ghp_1234567890"}
+- Github PR: the link to you Pull Request
+- Json URL: the link to your definition file. example: https://github.com/Rivalz-ai/ADCS-core/blob/main/inference/descriptions.json
+- Document link (optional): If you have documentation about your provider, you can provide the link here.
+- Playground: After you fill in the above information, we will generate the playground for you to test and verify your provider.
+ - Method: Select the method you want to test
+ - Input: Fill in the parameter for the selected method
+ - click the verify button to test your provider
+- If the result is successful, you can submit your provider
